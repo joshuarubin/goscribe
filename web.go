@@ -7,14 +7,14 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", hello)
-	fmt.Println("listening...")
+	http.HandleFunc("/", handleIndex)
+
 	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func hello(res http.ResponseWriter, req *http.Request) {
+func handleIndex(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "hello, world")
 }

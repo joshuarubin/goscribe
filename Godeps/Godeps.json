@@ -1,5 +1,15 @@
 {
 	"ImportPath": "github.com/joshuarubin/goscribe",
 	"GoVersion": "go1.2.1",
-	"Deps": []
+	"Deps": [
+		{
+			"ImportPath": "github.com/jacobsa/oglematchers",
+			"Rev": "4fc24f97b5b74022c2a3f4ca7eed57ca29083d3e"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/goconvey/convey",
+			"Comment": "1.5.0-178-gefb168e",
+			"Rev": "efb168eea692045f2ea16526c2e1fcebd065d010"
+		}
+	]
 }
