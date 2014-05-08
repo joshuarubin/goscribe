@@ -10,6 +10,19 @@
 			"ImportPath": "github.com/smartystreets/goconvey/convey",
 			"Comment": "1.5.0-178-gefb168e",
 			"Rev": "efb168eea692045f2ea16526c2e1fcebd065d010"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/go-metrics",
+			"Rev": "b23f8b043b6492e7aef34eb11aab268a5c89c14b"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/gorelic",
+			"Comment": "v0.0.6-2-ge0ddd42",
+			"Rev": "e0ddd424a569041d2d0094d9ea21f065f6100a67"
+		},
+		{
+			"ImportPath": "github.com/yvasiyarov/newrelic_platform_go",
+			"Rev": "2d5b3d6e6db42e361ca5a5b6376a1368f7067236"
 		}
 	]
 }
