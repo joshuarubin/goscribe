@@ -28,7 +28,7 @@ build:
         - script:
             name: go build
             code: |
-                godep go build -v ./...
+                godep go build -tags wercker -v ./...
 
         # Test the project
         - script:

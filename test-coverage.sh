@@ -8,7 +8,13 @@ for dir in $(find . \( -path ./Godeps -o -path ./.git \) -prune -o -type d -prin
     continue
   fi
 
-  godep go test -v -coverprofile=profile.out $dir
+  if [ "$WERCKER" == "true" ]; then
+    BUILD_TAGS="-tags wercker"
+  fi
+
+  cmd="godep go test $BUILD_TAGS -v -coverprofile=profile.out $dir"
+  echo $cmd
+  exec $cmd
 
   if [ -f profile.out ]; then
     cat profile.out | grep -v "mode: set" >> acc.out
