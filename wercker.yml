@@ -13,7 +13,14 @@ build:
             code: |
                 cd $WERCKER_SOURCE_DIR
                 go version
-                go get -t ./...
+
+                # go get should not be used
+                # godep should provide all dependencies
+                # missing dependencies is a legitimate build failure
+                # go get -t ./...
+                go get github.com/tools/godep
+
+                # these are needed for coverage testing
                 go get github.com/axw/gocov/gocov
                 go get github.com/mattn/goveralls
 
@@ -21,13 +28,15 @@ build:
         - script:
             name: go build
             code: |
-                go build ./...
+                godep go build ./...
 
         # Test the project
         - script:
             name: go test
             code: |
-                goveralls -repotoken COVERALLS_REPO_TOKEN
+                # prepend godep path to GOPATH
+                export GOPATH=`godep path`:$GOPATH
+                goveralls -repotoken $COVERALLS_REPO_TOKEN
 
 deploy:
     steps:
