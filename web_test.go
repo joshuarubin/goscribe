@@ -9,10 +9,9 @@ import (
 
 func TestHandlers(t *testing.T) {
 	Convey("Index should return with status OK", t, func() {
-		request, _ := http.NewRequest("GET", "/", nil)
-		response := httptest.NewRecorder()
-
-		handleIndex(response, request)
-		So(response.Code, ShouldEqual, http.StatusOK)
+		req, _ := http.NewRequest("GET", "/", nil)
+		res := httptest.NewRecorder()
+		m.ServeHTTP(res, req)
+		So(res.Code, ShouldEqual, http.StatusOK)
 	})
 }

@@ -3,6 +3,16 @@
 	"GoVersion": "go1.2.1",
 	"Deps": [
 		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1",
+			"Rev": "37d7f8432a3e684eef9b2edece76bdfa6ac85b39"
+		},
+		{
+			"ImportPath": "github.com/go-martini/martini",
+			"Comment": "v1.0-rc1-20-g68f1310",
+			"Rev": "68f131047aa0c227aa36e6d95164f76fee5e3fe5"
+		},
+		{
 			"ImportPath": "github.com/jacobsa/oglematchers",
 			"Rev": "4fc24f97b5b74022c2a3f4ca7eed57ca29083d3e"
 		},
