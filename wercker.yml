@@ -22,7 +22,7 @@ build:
 
                 # these are needed for coverage testing
                 go get -v github.com/axw/gocov/gocov
-                go get -v github.com/mattn/goveralls
+                go get -v github.com/joshuarubin/goveralls
 
         # Build the project
         - script:
@@ -34,6 +34,7 @@ build:
         - script:
             name: go test
             code: |
+                export GIT_BRANCH=$WERCKER_GIT_BRANCH
                 ./test-coverage.sh
                 goveralls -v -coverprofile=acc.out -service wercker -repotoken $COVERALLS_REPO_TOKEN
 
