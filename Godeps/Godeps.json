@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/joshuarubin/goscribe",
+	"GoVersion": "go1.2.1",
+	"Deps": []
+}
