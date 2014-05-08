@@ -15,6 +15,11 @@ func init() {
 	agent = gorelic.NewAgent()
 
 	if key := os.Getenv("NEW_RELIC_LICENSE_KEY"); key != "" {
+		if name := os.Getenv("APP_NAME"); name != "" {
+			agent.NewrelicName = name
+		}
+
+		agent.CollectHTTPStat = true
 		agent.NewrelicLicense = key
 		agent.Run()
 	}
