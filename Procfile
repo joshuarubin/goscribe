@@ -1,1 +1,1 @@
-web: ./goscribe
+web: goscribe
