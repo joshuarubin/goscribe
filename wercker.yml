@@ -34,9 +34,8 @@ build:
         - script:
             name: go test
             code: |
-                # prepend godep path to GOPATH
-                export GOPATH=`godep path`:$GOPATH
-                goveralls -repotoken $COVERALLS_REPO_TOKEN
+                ./test-coverage.sh
+                goveralls -v -coverprofile=acc.out -service wercker -repotoken $COVERALLS_REPO_TOKEN
 
 deploy:
     steps:
