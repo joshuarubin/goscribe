@@ -1,108 +1,72 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/go-martini/martini"
-	"github.com/kr/pretty"
+	"github.com/joshuarubin/goscribe/telapi"
+	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/gzip"
+	"github.com/martini-contrib/render"
+	"github.com/martini-contrib/strict"
 )
-
-const transcribeURLPattern = "https://%s:%s@%s/v1/Accounts/%s/Transcriptions.json"
 
 var (
-	m                *martini.ClassicMartini
-	telapiBaseHost   string
-	telapiAccountSid string
-	telapiAuthToken  string
-	baseURL          string
+	m       *martini.ClassicMartini
+	baseURL string
 )
+
+type transcribeData struct {
+	CallbackURL string `form:"callback_url" binding:"required"`
+	AudioURL    string `form:"audio_url" binding:"required"`
+}
 
 func init() {
 	// BASE_URL is not required or else wercker tests would fail
 	baseURL = os.Getenv("BASE_URL")
 
-	if telapiBaseHost = os.Getenv("TELAPI_BASE_HOST"); telapiBaseHost == "" {
-		telapiBaseHost = "api.telapi.com"
-	}
-
-	if telapiAccountSid = os.Getenv("TELAPI_ACCOUNT_SID"); telapiAccountSid == "" {
-		log.Fatalln("TELAPI_ACCOUNT_SID is not set")
-	}
-
-	if telapiAuthToken = os.Getenv("TELAPI_AUTH_TOKEN"); telapiAuthToken == "" {
-		log.Fatalln("TELAPI_AUTH_TOKEN is not set")
-	}
-
 	m = martini.Classic()
 
 	m.Use(gzip.All())
+	m.Use(render.Renderer())
 
 	m.Get("/", func() string {
 		return "hello, world"
 	})
+
+	m.Post(
+		"/v1/transcribe",
+		strict.Accept("application/json"),
+		strict.ContentType("application/x-www-form-urlencoded"),
+		binding.Bind(transcribeData{}),
+		handleTranscribe,
+	)
+
+	m.Router.NotFound(strict.MethodNotAllowed, strict.NotFound)
 }
 
 func main() {
 	m.Run()
 }
 
-type transcribeResponse struct {
-	Status             int
-	Code               int
-	SID                string
-	DateCreated        string
-	DateUpdated        string
-	AccountSID         string
-	Type               string
-	AudioURL           string
-	Duration           string
-	TranscriptionText  string
-	APIVersion         string
-	Price              string
-	TranscribeCallback string
-	CallbackMethod     string
-	URI                string
-	Message            string
-	MoreInfo           string
+func telapiError(r render.Render, err error) {
+	if telapiError, ok := err.(telapi.Error); ok {
+		r.JSON(telapiError.JSON())
+		return
+	}
+
+	r.JSON(500, map[string]interface{}{
+		"status": 500,
+		"error":  err.Error(),
+	})
 }
 
-func getTranscription(audioURL string) error {
-	transcribeURL := fmt.Sprintf(transcribeURLPattern, telapiAccountSid, telapiAuthToken, telapiBaseHost, telapiAccountSid)
-	fmt.Println("transcribeURL", transcribeURL)
-
-	// TODO(jrubin) change user agent
-
-	data := url.Values{
-		"AudioUrl":           {audioURL},
-		"TranscribeCallback": {baseURL + "/process-transcription"},
-	}
-
-	pretty.Println("POST", data)
-
-	resp, err := http.PostForm(transcribeURL, data)
-
+func handleTranscribe(data transcribeData, r render.Render) {
+	resp, err := telapi.TranscribeURL(data.AudioURL, data.CallbackURL)
 	if err != nil {
-		fmt.Println(err)
-		return err
+		telapiError(r, err)
+		return
 	}
 
-	fmt.Println("status", resp.StatusCode, resp.Status)
-	pretty.Println("header", resp.Header)
-
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	fmt.Println("body", string(body))
-
-	return nil
+	r.JSON(200, resp.TranscribeClientResponse.Translate())
 }
