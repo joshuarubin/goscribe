@@ -13,3 +13,9 @@ func TestBaseUrl(t *testing.T) {
 		So(os.Getenv("BASE_URL"), ShouldNotBeEmpty)
 	})
 }
+
+func TestGetTranscription(t *testing.T) {
+	//Convey("getTranscription should work", t, func() {
+	//})
+	getTranscription(baseURL + "/audio/testing123.mp3")
+}

@@ -3,14 +3,17 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestEnvironment(t *testing.T) {
 	Convey("TelAPI Account SID should be set", t, func() {
-		So(os.Getenv("TELAPI_ACCOUNT_SID"), ShouldNotBeEmpty)
+		So(telapiAccountSid, ShouldNotBeEmpty)
+	})
+
+	Convey("TelAPI Auth Token should be set", t, func() {
+		So(telapiAuthToken, ShouldNotBeEmpty)
 	})
 }
 
