@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"strings"
 	"testing"
 
@@ -16,9 +15,17 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestBaseUrl(t *testing.T) {
+func TestEnvironment(t *testing.T) {
 	Convey("Base URL should be set", t, func() {
-		So(os.Getenv("BASE_URL"), ShouldNotBeEmpty)
+		So(baseURL, ShouldNotBeEmpty)
+	})
+
+	Convey("AUTH_USER should be set", t, func() {
+		So(authUser, ShouldNotBeEmpty)
+	})
+
+	Convey("AUTH_PASS should be set", t, func() {
+		So(authPass, ShouldNotBeEmpty)
 	})
 }
 
@@ -38,6 +45,7 @@ func TestGetTranscription(t *testing.T) {
 		"callback_url": {baseURL + "/v1/transcribe/process"},
 		"audio_url":    {baseURL + "/audio/testing123.mp3"},
 	})
+	req.SetBasicAuth(authUser, authPass)
 	res := httptest.NewRecorder()
 	m.ServeHTTP(res, req)
 	body, _ := ioutil.ReadAll(res.Body)

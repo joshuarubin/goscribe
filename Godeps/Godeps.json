@@ -29,6 +29,10 @@
 			"Rev": "6807e777504f54ad073ecef66747de158294b639"
 		},
 		{
+			"ImportPath": "github.com/martini-contrib/auth",
+			"Rev": "a455012474163bc03aa53b2be38ac603d2ae9474"
+		},
+		{
 			"ImportPath": "github.com/martini-contrib/binding",
 			"Rev": "3c6304eca9089d5f082b80bf6bbcb8ce1c34c040"
 		},

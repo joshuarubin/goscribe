@@ -14,6 +14,8 @@ The following environment variables are expected.
 export BASE_URL=”http://<public_server_location>”
 export TELAPI_ACCOUNT_SID=”<your_telapi_account_sid>”
 export TELAPI_AUTH_TOKEN=”<your_telapi_auth_token>”
+export AUTH_USER=”<http_basic_auth_user>”
+export AUTH_PASS=”<http_basic_auth_pass>”
 ```
 
 ## Heroku
