@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 
 	"github.com/go-martini/martini"
 	"github.com/joshuarubin/goscribe/telapi"
+	"github.com/kr/pretty"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/gzip"
 	"github.com/martini-contrib/render"
@@ -19,6 +21,22 @@ var (
 type transcribeData struct {
 	CallbackURL string `form:"callback_url" binding:"required"`
 	AudioURL    string `form:"audio_url" binding:"required"`
+}
+
+type transcribeClientTelAPIData struct {
+	ID                string `form:"TranscriptionSid"    json:"id"`
+	Status            string `form:"TranscriptionStatus" json:"status"`
+	TranscriptionText string `form:"TranscriptionText"   json:"transcription_text"`
+}
+
+type transcribeTelAPIData struct {
+	transcribeClientTelAPIData
+	AudioURL             string  `form:"AudioUrl"`
+	Duration             float32 `form:"Duration"`
+	AccountSID           string  `form:"AccountSid"`
+	APIVersion           string  `form:"ApiVersion"`
+	Price                float32 `form:"Price"`
+	TranscriptionQuality string  `form:"TranscriptionQuality"`
 }
 
 func init() {
@@ -40,6 +58,13 @@ func init() {
 		strict.ContentType("application/x-www-form-urlencoded"),
 		binding.Bind(transcribeData{}),
 		handleTranscribe,
+	)
+
+	m.Post(
+		"/v1/transcribe/process",
+		strict.ContentType("application/x-www-form-urlencoded"),
+		binding.Bind(transcribeTelAPIData{}),
+		handleTranscribeProcess,
 	)
 
 	m.Router.NotFound(strict.MethodNotAllowed, strict.NotFound)
@@ -69,4 +94,11 @@ func handleTranscribe(data transcribeData, r render.Render) {
 	}
 
 	r.JSON(200, resp.TranscribeClientResponse.Translate())
+}
+
+func handleTranscribeProcess(data transcribeTelAPIData) (int, string) {
+	pretty.Println(data)
+	b, _ := json.Marshal(data.transcribeClientTelAPIData)
+	pretty.Println(string(b))
+	return 200, ""
 }
