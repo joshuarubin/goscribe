@@ -4,7 +4,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -23,17 +22,22 @@ func TestBaseUrl(t *testing.T) {
 	})
 }
 
+func genPostReq(path string, params *url.Values) (*http.Request, error) {
+	req, err := http.NewRequest("POST", path, strings.NewReader(params.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	return req, nil
+}
+
 func TestGetTranscription(t *testing.T) {
 	//Convey("getTranscription should work", t, func() {
 	//})
-	callbackURL := baseURL + "/v1/transcribe/process"
-	audioURL := baseURL + "/audio/testing123.mp3"
-	req, _ := http.NewRequest("POST", "/v1/transcribe", strings.NewReader(fmt.Sprintf(
-		"callback_url=%s&audio_url=%s",
-		url.QueryEscape(callbackURL),
-		url.QueryEscape(audioURL),
-	)))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req, _ := genPostReq("/v1/transcribe", &url.Values{
+		"callback_url": {baseURL + "/v1/transcribe/process"},
+		"audio_url":    {baseURL + "/audio/testing123.mp3"},
+	})
 	res := httptest.NewRecorder()
 	m.ServeHTTP(res, req)
 	body, _ := ioutil.ReadAll(res.Body)
