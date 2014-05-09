@@ -17,22 +17,18 @@
 			"Rev": "4fc24f97b5b74022c2a3f4ca7eed57ca29083d3e"
 		},
 		{
+			"ImportPath": "github.com/kr/pretty",
+			"Comment": "go.weekly.2011-12-22-18-gbc9499c",
+			"Rev": "bc9499caa0f45ee5edb2f0209fbd61fbf3d9018f"
+		},
+		{
+			"ImportPath": "github.com/kr/text",
+			"Rev": "6807e777504f54ad073ecef66747de158294b639"
+		},
+		{
 			"ImportPath": "github.com/smartystreets/goconvey/convey",
 			"Comment": "1.5.0-178-gefb168e",
 			"Rev": "efb168eea692045f2ea16526c2e1fcebd065d010"
-		},
-		{
-			"ImportPath": "github.com/yvasiyarov/go-metrics",
-			"Rev": "b23f8b043b6492e7aef34eb11aab268a5c89c14b"
-		},
-		{
-			"ImportPath": "github.com/yvasiyarov/gorelic",
-			"Comment": "v0.0.6-2-ge0ddd42",
-			"Rev": "e0ddd424a569041d2d0094d9ea21f065f6100a67"
-		},
-		{
-			"ImportPath": "github.com/yvasiyarov/newrelic_platform_go",
-			"Rev": "2d5b3d6e6db42e361ca5a5b6376a1368f7067236"
 		}
 	]
 }
