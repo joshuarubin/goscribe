@@ -1,6 +1,9 @@
 {
 	"ImportPath": "github.com/joshuarubin/goscribe",
 	"GoVersion": "go1.2.1",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/codegangsta/inject",
@@ -26,8 +29,21 @@
 			"Rev": "6807e777504f54ad073ecef66747de158294b639"
 		},
 		{
+			"ImportPath": "github.com/martini-contrib/binding",
+			"Rev": "3c6304eca9089d5f082b80bf6bbcb8ce1c34c040"
+		},
+		{
 			"ImportPath": "github.com/martini-contrib/gzip",
 			"Rev": "c3f190769fc0769188614bbf077c82dacb8e9505"
+		},
+		{
+			"ImportPath": "github.com/martini-contrib/render",
+			"Rev": "151749ee4940202e80cc4f066107ced4259b9eef"
+		},
+		{
+			"ImportPath": "github.com/martini-contrib/strict",
+			"Comment": "0.1.0",
+			"Rev": "44893ecfb18d76bd04dcad6a0edd4356eaa31358"
 		},
 		{
 			"ImportPath": "github.com/smartystreets/goconvey/convey",
