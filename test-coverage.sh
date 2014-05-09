@@ -14,7 +14,7 @@ for dir in $(find . \( -path ./Godeps -o -path ./.git \) -prune -o -type d -prin
 
   cmd="godep go test $BUILD_TAGS -v -coverprofile=profile.out $dir"
   echo $cmd
-  exec $cmd
+  eval $cmd
 
   if [ -f profile.out ]; then
     cat profile.out | grep -v "mode: set" >> acc.out
