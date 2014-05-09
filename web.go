@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-martini/martini"
 	"github.com/kr/pretty"
+	"github.com/martini-contrib/gzip"
 )
 
 const transcribeURLPattern = "https://%s:%s@%s/v1/Accounts/%s/Transcriptions.json"
@@ -39,6 +40,9 @@ func init() {
 	}
 
 	m = martini.Classic()
+
+	m.Use(gzip.All())
+
 	m.Get("/", func() string {
 		return "hello, world"
 	})

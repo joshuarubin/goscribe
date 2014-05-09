@@ -26,6 +26,10 @@
 			"Rev": "6807e777504f54ad073ecef66747de158294b639"
 		},
 		{
+			"ImportPath": "github.com/martini-contrib/gzip",
+			"Rev": "c3f190769fc0769188614bbf077c82dacb8e9505"
+		},
+		{
 			"ImportPath": "github.com/smartystreets/goconvey/convey",
 			"Comment": "1.5.0-178-gefb168e",
 			"Rev": "efb168eea692045f2ea16526c2e1fcebd065d010"
