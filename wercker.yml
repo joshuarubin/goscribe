@@ -28,14 +28,14 @@ build:
         - script:
             name: go build
             code: |
-                godep go build -tags wercker -v ./...
+                make build
 
         # Test the project
         - script:
             name: go test
             code: |
                 export GIT_BRANCH=$WERCKER_GIT_BRANCH
-                ./test-coverage.sh
+                make coverage
                 goveralls -v -coverprofile=acc.out -service wercker -repotoken $COVERALLS_REPO_TOKEN
 
 deploy:
