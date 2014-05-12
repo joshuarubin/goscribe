@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -16,10 +17,11 @@ import (
 	"github.com/martini-contrib/gzip"
 	"github.com/martini-contrib/render"
 	"github.com/martini-contrib/strict"
+	"github.com/mitchellh/goamz/aws"
+	"github.com/mitchellh/goamz/s3"
 )
 
 // TODO(jrubin):
-// * post file to s3 and use that url for transcriptions
 // * mgo (http://labix.org/mgo)
 // * sessions (https://github.com/martini-contrib/sessions)
 // * oauth2 (https://github.com/martini-contrib/oauth2)
@@ -30,10 +32,12 @@ import (
 // * secure (https://github.com/martini-contrib/secure)
 
 var (
-	m        *martini.ClassicMartini
-	baseURL  string
-	authUser string
-	authPass string
+	m         *martini.ClassicMartini
+	s3Bucket  *s3.Bucket
+	s3BaseURL string
+	baseURL   string
+	authUser  string
+	authPass  string
 )
 
 type callbackData struct {
@@ -51,10 +55,20 @@ type transcribeUploadData struct {
 }
 
 func init() {
-	// BASE_URL, AUTH_USER and AUTH_PASS are not required or else wercker tests would fail
+	// BASE_URL, AUTH_USER and AUTH_PASS, AWS_S3_BASE_URL are not required or else wercker tests would fail
 	baseURL = os.Getenv("BASE_URL")
 	authUser = os.Getenv("AUTH_USER")
 	authPass = os.Getenv("AUTH_PASS")
+	s3BaseURL = os.Getenv("AWS_S3_BASE_URL")
+
+	if awsAuth, err := aws.EnvAuth(); err != nil {
+		// not required or else wercker tests would fail
+		log.Println(err)
+	} else {
+		// TODO(jrubin) allow region to be chosen by env variable
+		s3Data := s3.New(awsAuth, aws.USWest2)
+		s3Bucket = s3Data.Bucket(os.Getenv("AWS_S3_BUCKET_NAME"))
+	}
 
 	m = martini.Classic()
 
@@ -130,6 +144,31 @@ func telapiError(r render.Render, err error) {
 	jsonError(r, http.StatusInternalServerError, err)
 }
 
+func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
+	fileName := data.Filename
+	fileType := data.Header.Get("Content-Type")
+
+	file, err := data.Open()
+	defer file.Close()
+
+	if err != nil {
+		return "", err
+	}
+
+	fileData, err := ioutil.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
+	filePath := fmt.Sprintf("/%s/%s", basePath, fileName)
+
+	if err := s3Bucket.Put(filePath, fileData, fileType, s3.PublicRead); err != nil {
+		return "", err
+	}
+
+	return s3BaseURL + filePath, nil
+}
+
 func handleTranscribe(data transcribeData, r render.Render) {
 	resp, err := telapi.TranscribeURL(data.AudioURL, data.CallbackURL)
 	if err != nil {
@@ -140,27 +179,25 @@ func handleTranscribe(data transcribeData, r render.Render) {
 	success(r, resp.TranscribeClientResponse.Translate())
 }
 
-func handleTranscribeProcess(data telapi.TranscribeCallbackData) (int, string) {
+func handleTranscribeProcess(data telapi.TranscribeCallbackData, r render.Render) {
 	pretty.Println(data)
 	b, _ := json.Marshal(data.TranscribeCallbackClientData)
 	pretty.Println(string(b))
-	return http.StatusOK, ""
+	success(r)
 }
 
 func handleTranscribeUpload(data transcribeUploadData, r render.Render) {
-	file, err := data.AudioData.Open()
+	fileURL, err := s3Upload("audio", data.AudioData)
 	if err != nil {
 		jsonError(r, http.StatusInternalServerError, err)
 		return
 	}
 
-	fileData, err := ioutil.ReadAll(file)
+	resp, err := telapi.TranscribeURL(fileURL, data.CallbackURL)
 	if err != nil {
-		jsonError(r, http.StatusInternalServerError, err)
+		telapiError(r, err)
 		return
 	}
 
-	fmt.Println(fileData)
-
-	success(r)
+	success(r, resp.TranscribeClientResponse.Translate())
 }

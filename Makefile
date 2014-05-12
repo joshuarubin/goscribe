@@ -30,3 +30,6 @@ build:
 
 clean:
 	rm -f ./goscribe ./gin-bin ./acc.out
+
+save:
+	godep save ./...

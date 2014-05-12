@@ -18,6 +18,10 @@ export TELAPI_ACCOUNT_SID=”<your_telapi_account_sid>”
 export TELAPI_AUTH_TOKEN=”<your_telapi_auth_token>”
 export AUTH_USER=”<http_basic_auth_user>”
 export AUTH_PASS=”<http_basic_auth_pass>”
+export AWS_ACCESS_KEY_ID=”<your_aws_key_id>”
+export AWS_SECRET_ACCESS_KEY=”<your_aws_secret_key>”
+export AWS_S3_BUCKET_NAME=”<your_s3_bucket_name>”
+export AWS_S3_BASE_URL=”http://<your_s3_base_url>”
 ```
 
 ## Heroku

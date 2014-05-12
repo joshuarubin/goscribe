@@ -50,6 +50,14 @@
 			"Rev": "44893ecfb18d76bd04dcad6a0edd4356eaa31358"
 		},
 		{
+			"ImportPath": "github.com/mitchellh/goamz/aws",
+			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/goamz/s3",
+			"Rev": "c64767727bc901aecdc6466ed60ca5055e1dce94"
+		},
+		{
 			"ImportPath": "github.com/smartystreets/goconvey/convey",
 			"Comment": "1.5.0-178-gefb168e",
 			"Rev": "efb168eea692045f2ea16526c2e1fcebd065d010"
