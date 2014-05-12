@@ -16,6 +16,7 @@ import (
 )
 
 // TODO(jrubin):
+// * post file to s3 and use that url for transcriptions
 // * mgo (http://labix.org/mgo)
 // * sessions (https://github.com/martini-contrib/sessions)
 // * oauth2 (https://github.com/martini-contrib/oauth2)
@@ -35,22 +36,6 @@ var (
 type transcribeData struct {
 	CallbackURL string `form:"callback_url" binding:"required"`
 	AudioURL    string `form:"audio_url" binding:"required"`
-}
-
-type transcribeClientTelAPIData struct {
-	ID                string `form:"TranscriptionSid"    json:"id"`
-	Status            string `form:"TranscriptionStatus" json:"status"`
-	TranscriptionText string `form:"TranscriptionText"   json:"transcription_text"`
-}
-
-type transcribeTelAPIData struct {
-	transcribeClientTelAPIData
-	AudioURL             string  `form:"AudioUrl"`
-	Duration             float32 `form:"Duration"`
-	AccountSID           string  `form:"AccountSid"`
-	APIVersion           string  `form:"ApiVersion"`
-	Price                float32 `form:"Price"`
-	TranscriptionQuality string  `form:"TranscriptionQuality"`
 }
 
 func init() {
@@ -80,7 +65,7 @@ func init() {
 	m.Post(
 		"/v1/transcribe/process",
 		strict.ContentType("application/x-www-form-urlencoded"),
-		binding.Bind(transcribeTelAPIData{}),
+		binding.Bind(telapi.TranscribeCallbackData{}),
 		handleTranscribeProcess,
 	)
 
@@ -113,9 +98,9 @@ func handleTranscribe(data transcribeData, r render.Render) {
 	r.JSON(200, resp.TranscribeClientResponse.Translate())
 }
 
-func handleTranscribeProcess(data transcribeTelAPIData) (int, string) {
+func handleTranscribeProcess(data telapi.TranscribeCallbackData) (int, string) {
 	pretty.Println(data)
-	b, _ := json.Marshal(data.transcribeClientTelAPIData)
+	b, _ := json.Marshal(data.TranscribeCallbackClientData)
 	pretty.Println(string(b))
 	return http.StatusOK, ""
 }

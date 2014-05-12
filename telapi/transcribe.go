@@ -51,6 +51,24 @@ type TranscribeResponse struct {
 	URI                string `json:"uri"`
 }
 
+// TranscribeCallbackClientData contains the fields of the transcribe callback that are useful to the client of this app
+type TranscribeCallbackClientData struct {
+	ID                string `form:"TranscriptionSid"    json:"id"`
+	Status            string `form:"TranscriptionStatus" json:"status"`
+	TranscriptionText string `form:"TranscriptionText"   json:"transcription_text"`
+}
+
+// TranscribeCallbackData contains all fields in a transcribe callback
+type TranscribeCallbackData struct {
+	TranscribeCallbackClientData
+	AudioURL             string  `form:"AudioUrl"`
+	Duration             float32 `form:"Duration"`
+	AccountSID           string  `form:"AccountSid"`
+	APIVersion           string  `form:"ApiVersion"`
+	Price                float32 `form:"Price"`
+	TranscriptionQuality string  `form:"TranscriptionQuality"`
+}
+
 // TranscribeURL initiates the transcription of the file at audioURL.
 // TelAPI will respond to callbackURL with a message as described at
 // http://www.telapi.com/docs/api/rest/transcriptions/transcribe-audio-url/
