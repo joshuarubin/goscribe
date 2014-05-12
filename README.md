@@ -7,7 +7,9 @@ Go Audio Transcription Web App
 
 The following environment variables are expected.
 
-* `$BASE_URL` *MUST* be a publicly accessible URL, not something on `localhost` or else the transcription server callback will never be made. You can use [ngrok](https://ngrok.com/) or [Runscope Passageway](https://www.runscope.com/docs/passageway) to make a localhost server public.
+* `$BASE_URL` *MUST* be a publicly accessible URL, not something on `localhost` if you intend to test callbacks through the app itself.
+    * You can use [ngrok](https://ngrok.com/) or [Runscope Passageway](https://www.runscope.com/docs/passageway) to make a localhost server public.
+    * Alternatively, you can set callbacks to use [Runscope Request Capture](https://www.runscope.com/docs/request-capture) or [RequestBin](http://requestb.in/) if you just want to ensure that a callback is made and to inspect its data.
 * For testing, you may also set `$TELAPI_BASE_HOST` to override the default (`api.telapi.com`). This is useful if you want to use [Runscope](https://www.runscope.com) to proxy and capture outgoing requests. Requests will always be built with the `https://` scheme.
 
 ```bash
