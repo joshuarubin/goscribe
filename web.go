@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"os"
 
@@ -33,9 +36,18 @@ var (
 	authPass string
 )
 
-type transcribeData struct {
+type callbackData struct {
 	CallbackURL string `form:"callback_url" binding:"required"`
-	AudioURL    string `form:"audio_url" binding:"required"`
+}
+
+type transcribeData struct {
+	callbackData
+	AudioURL string `form:"audio_url" binding:"required"`
+}
+
+type transcribeUploadData struct {
+	callbackData
+	AudioData *multipart.FileHeader `form:"audio_data" binding:"required"`
 }
 
 func init() {
@@ -59,6 +71,7 @@ func init() {
 		strict.Accept("application/json"),
 		strict.ContentType("application/x-www-form-urlencoded"),
 		binding.Bind(transcribeData{}),
+		binding.ErrorHandler,
 		handleTranscribe,
 	)
 
@@ -66,7 +79,17 @@ func init() {
 		"/v1/transcribe/process",
 		strict.ContentType("application/x-www-form-urlencoded"),
 		binding.Bind(telapi.TranscribeCallbackData{}),
+		binding.ErrorHandler,
 		handleTranscribeProcess,
+	)
+
+	m.Post(
+		"/v1/transcribe/upload",
+		auth.Basic(authUser, authPass),
+		strict.Accept("application/json"),
+		binding.MultipartForm(transcribeUploadData{}),
+		binding.ErrorHandler,
+		handleTranscribeUpload,
 	)
 
 	m.Router.NotFound(strict.MethodNotAllowed, strict.NotFound)
@@ -76,16 +99,35 @@ func main() {
 	m.Run()
 }
 
+func success(r render.Render, data ...interface{}) {
+	ret := map[string]interface{}{
+		"status": http.StatusOK,
+	}
+
+	l := len(data)
+	if l == 1 {
+		ret["data"] = data[0]
+	} else if l > 1 {
+		ret["data"] = data
+	}
+
+	r.JSON(http.StatusOK, ret)
+}
+
+func jsonError(r render.Render, status int, err error) {
+	r.JSON(status, map[string]interface{}{
+		"status": status,
+		"error":  err.Error(),
+	})
+}
+
 func telapiError(r render.Render, err error) {
 	if telapiError, ok := err.(telapi.Error); ok {
 		r.JSON(telapiError.JSON())
 		return
 	}
 
-	r.JSON(http.StatusInternalServerError, map[string]interface{}{
-		"status": http.StatusInternalServerError,
-		"error":  err.Error(),
-	})
+	jsonError(r, http.StatusInternalServerError, err)
 }
 
 func handleTranscribe(data transcribeData, r render.Render) {
@@ -95,7 +137,7 @@ func handleTranscribe(data transcribeData, r render.Render) {
 		return
 	}
 
-	r.JSON(200, resp.TranscribeClientResponse.Translate())
+	success(r, resp.TranscribeClientResponse.Translate())
 }
 
 func handleTranscribeProcess(data telapi.TranscribeCallbackData) (int, string) {
@@ -103,4 +145,22 @@ func handleTranscribeProcess(data telapi.TranscribeCallbackData) (int, string) {
 	b, _ := json.Marshal(data.TranscribeCallbackClientData)
 	pretty.Println(string(b))
 	return http.StatusOK, ""
+}
+
+func handleTranscribeUpload(data transcribeUploadData, r render.Render) {
+	file, err := data.AudioData.Open()
+	if err != nil {
+		jsonError(r, http.StatusInternalServerError, err)
+		return
+	}
+
+	fileData, err := ioutil.ReadAll(file)
+	if err != nil {
+		jsonError(r, http.StatusInternalServerError, err)
+		return
+	}
+
+	fmt.Println(fileData)
+
+	success(r)
 }
