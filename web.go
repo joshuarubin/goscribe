@@ -144,6 +144,16 @@ func telapiError(r render.Render, err error) {
 	jsonError(r, http.StatusInternalServerError, err)
 }
 
+func transcribe(r render.Render, url, callback string) {
+	resp, err := telapi.TranscribeURL(url, callback)
+	if err != nil {
+		telapiError(r, err)
+		return
+	}
+
+	success(r, resp.TranscribeClientResponse.Translate())
+}
+
 func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
 	fileName := data.Filename
 	fileType := data.Header.Get("Content-Type")
@@ -170,13 +180,7 @@ func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
 }
 
 func handleTranscribe(data transcribeData, r render.Render) {
-	resp, err := telapi.TranscribeURL(data.AudioURL, data.CallbackURL)
-	if err != nil {
-		telapiError(r, err)
-		return
-	}
-
-	success(r, resp.TranscribeClientResponse.Translate())
+	transcribe(r, data.AudioURL, data.CallbackURL)
 }
 
 func handleTranscribeProcess(data telapi.TranscribeCallbackData, r render.Render) {
@@ -193,11 +197,5 @@ func handleTranscribeUpload(data transcribeUploadData, r render.Render) {
 		return
 	}
 
-	resp, err := telapi.TranscribeURL(fileURL, data.CallbackURL)
-	if err != nil {
-		telapiError(r, err)
-		return
-	}
-
-	success(r, resp.TranscribeClientResponse.Translate())
+	transcribe(r, fileURL, data.CallbackURL)
 }
