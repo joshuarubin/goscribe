@@ -9,7 +9,8 @@ endif
 all: build
 
 lint:
-	golint $(GOFILES)
+	@golint $(GOFILES)
+	@go vet ./...
 
 test:
 	godep go test -tags $(BUILD_TAGS) -v ./...
