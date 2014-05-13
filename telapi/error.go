@@ -32,7 +32,7 @@ func (msg Error) Error() string {
 // Status returns the HTTP status code of the error response
 func (msg Error) Status() int {
 	if msg.Data != nil {
-		if jsonData, ok := msg.Data.(JSONError); ok {
+		if jsonData, ok := msg.Data.(*JSONError); ok {
 			return jsonData.Status
 		}
 	}
@@ -86,7 +86,7 @@ func responseError(res *http.Response) ([]byte, error) {
 	}
 
 	// non-200 response, going to return an error
-	retErr := &Error{
+	retErr := Error{
 		Response: res,
 		Body:     body,
 	}
