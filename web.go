@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -170,7 +171,12 @@ func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 
-	filePath := fmt.Sprintf("/%s/%s", basePath, fileName)
+	h := sha1.New()
+	if _, err := h.Write(fileData); err != nil {
+		return "", err
+	}
+
+	filePath := fmt.Sprintf("/%s/%x_%s", basePath, h.Sum(nil), fileName)
 
 	if err := s3Bucket.Put(filePath, fileData, fileType, s3.PublicRead); err != nil {
 		return "", err
