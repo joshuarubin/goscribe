@@ -39,17 +39,17 @@ func genPostReq(path string, params *url.Values) (*http.Request, error) {
 }
 
 func TestGetTranscription(t *testing.T) {
-	//Convey("getTranscription should work", t, func() {
-	//})
-	req, _ := genPostReq("/v1/transcribe", &url.Values{
-		"callback_url": {baseURL + "/v1/transcribe/process"},
-		"audio_url":    {baseURL + "/audio/testing123.mp3"},
+	SkipConvey("getTranscription should work", t, func() {
+		req, _ := genPostReq("/v1/transcribe", &url.Values{
+			"callback_url": {baseURL + "/v1/transcribe/process"},
+			"audio_url":    {baseURL + "/audio/testing123.mp3"},
+		})
+		req.SetBasicAuth(authUser, authPass)
+		res := httptest.NewRecorder()
+		m.ServeHTTP(res, req)
+		body, _ := ioutil.ReadAll(res.Body)
+		var data interface{}
+		json.Unmarshal(body, &data)
+		pretty.Println(data)
 	})
-	req.SetBasicAuth(authUser, authPass)
-	res := httptest.NewRecorder()
-	m.ServeHTTP(res, req)
-	body, _ := ioutil.ReadAll(res.Body)
-	var data interface{}
-	json.Unmarshal(body, &data)
-	pretty.Println(data)
 }
