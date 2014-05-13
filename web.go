@@ -156,6 +156,10 @@ func transcribe(r render.Render, url, callback string) {
 }
 
 func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
+	if s3Bucket == nil {
+		return "", fmt.Errorf("upload unavailable")
+	}
+
 	fileName := data.Filename
 	fileType := data.Header.Get("Content-Type")
 
