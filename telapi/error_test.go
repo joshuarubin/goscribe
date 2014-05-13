@@ -76,7 +76,7 @@ func TestError(t *testing.T) {
 	})
 
 	Convey("JSONError should turn into telapi.Error", t, func() {
-		So(Error{}.Status(), ShouldEqual, 0)
+		So(Error{}.Status(), ShouldEqual, http.StatusInternalServerError)
 		So(jsonErr0, ShouldNotBeNil)
 
 		taError := Error{

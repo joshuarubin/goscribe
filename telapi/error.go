@@ -42,7 +42,7 @@ func (msg Error) Status() int {
 	}
 
 	// this really *shouldn't* happen...
-	return 0
+	return http.StatusInternalServerError
 }
 
 // JSON returns an object representation of the error suitable for JSON Marshalling
@@ -69,7 +69,7 @@ func (msg Error) JSON() (int, interface{}) {
 	}
 
 	// this really *shouldn't* happen...
-	ret["message"] = "Unknown Error"
+	ret["error"] = "unknown error"
 	return status, ret
 }
 
