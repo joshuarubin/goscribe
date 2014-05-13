@@ -160,7 +160,6 @@ func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
 		return "", fmt.Errorf("upload unavailable")
 	}
 
-	fileName := data.Filename
 	fileType := data.Header.Get("Content-Type")
 
 	file, err := data.Open()
@@ -180,7 +179,7 @@ func s3Upload(basePath string, data *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 
-	filePath := fmt.Sprintf("/%s/%x_%s", basePath, h.Sum(nil), fileName)
+	filePath := fmt.Sprintf("/%s/%x", basePath, h.Sum(nil))
 
 	if err := s3Bucket.Put(filePath, fileData, fileType, s3.PublicRead); err != nil {
 		return "", err
